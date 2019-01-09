@@ -3,12 +3,16 @@ package com.example.myfirsttext;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class EditContent extends Activity implements OnClickListener{
 
@@ -27,6 +31,17 @@ public class EditContent extends Activity implements OnClickListener{
 	private EditText theme;
 	
 	private EditText content;
+	
+	private String itemTheme;
+	
+	private String theTheme;
+	
+	private String theContent;
+	
+	private int readTextRequest;
+	
+	private Intent readIntent;
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +62,16 @@ public class EditContent extends Activity implements OnClickListener{
 		camera.setOnClickListener(this);
 		video.setOnClickListener(this);
 		voice.setOnClickListener(this);
+		readIntent = getIntent();
+		readTextRequest = readIntent.getIntExtra("textId",-1);
+		/*String changeString = Integer.toString(readTextRequest);*/
+		//Log.d("EditContent",readTextRequest);
+		if(readTextRequest != -1) {
+			theTheme = readIntent.getStringExtra("textTheme");
+			Log.d("EditContent",theTheme);
+			theContent = readIntent.getStringExtra("textContent");
+			theme.setText(theTheme);
+		}
 	}
 
 	@Override
@@ -54,10 +79,12 @@ public class EditContent extends Activity implements OnClickListener{
 		switch(v.getId()) {
 		case R.id.save:
 			String theme_data = theme.getText().toString();
+			String text_content = content.getText().toString();
 			Intent intent = new Intent();
-			intent.putExtra("theme", theme_data);
+			intent.putExtra("themeText", theme_data);
+			intent.putExtra("contentText", text_content);
 			setResult(RESULT_OK,intent);
-			finish();
+			Toast.makeText(this, "save succeed", Toast.LENGTH_SHORT).show();
 		}
 		
 	}

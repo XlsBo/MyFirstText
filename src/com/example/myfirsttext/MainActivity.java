@@ -6,8 +6,10 @@ import java.util.List;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,9 +27,22 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 	
 	private ListView listView;
 	
-	private MyTextDB myTextDB;
+	private MyTextDBHelper myTextDB;
 	
-	private List<String> themeList ;
+	private List<String> textThemeList ;
+	
+	private ArrayAdapter<String> adapter;
+	
+	private SQLiteDatabase textDB;
+	
+	private String returnContent;
+	
+	private String returnTheme;
+	
+	private String itemTheme;
+	
+	private int itemId;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -35,11 +50,10 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		setContentView(R.layout.activity_main);
 		create = (Button) findViewById(R.id.create_item);
 		listView = (ListView) findViewById(R.id.list_view);
-		myTextDB =new MyTextDB(this,"ThemeStore.db",null,1);
+		myTextDB = new MyTextDBHelper(this,"newThemeStore.db",null,4);
 		create.setOnClickListener(this);
-		//给主题列表添加适配器,未完成 
-		themeList = new ArrayList<String>(); 
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,themeList);
+		textThemeList = new ArrayList<String>(); 
+		adapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,textThemeList);
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(this);
 	}
@@ -53,7 +67,17 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 	
 	@Override
 	public void onItemClick(AdapterView<?> parent,View view,int position, long id ) {
-		
+		Intent readEditContent = new Intent(MainActivity.this,EditContent.class);
+		Cursor cursor = textDB.query("MyThemeList",null,null,null,null,null,null);
+		cursor.moveToPosition(position);
+		itemId = cursor.getInt(cursor.getColumnIndex("id"));
+		itemTheme = cursor.getString(cursor.getColumnIndex("themeList"));
+		/*String changeString = Integer.toString(itemId);
+		Log.d("MainActivity",changeString);
+		Log.d("MainActivity",itemTheme);*/
+		readEditContent.putExtra("textId", itemId);
+		readEditContent.putExtra("textTheme", itemTheme);
+		startActivity(readEditContent);
 	}
 	
 	@Override
@@ -61,11 +85,15 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		switch(requestCode) {
 		case 1:
 			if(resultCode == RESULT_OK) {
-				String returnTheme = data.getStringExtra("theme");
-				themeList.add(returnTheme);
-				SQLiteDatabase db = myTextDB.getReadableDatabase();
+				returnTheme = data.getStringExtra("themeText");
+				returnContent = data.getStringExtra("contentText");
+				textThemeList.add(returnTheme);
+				adapter.notifyDataSetChanged();
+				textDB = myTextDB.getWritableDatabase();
 				ContentValues values = new ContentValues();
 				values.put("themeList", returnTheme);
+				//values.put("content",returnContent);
+				textDB.insert("MyThemeList", null, values);
 			}
 			break;
 		default:

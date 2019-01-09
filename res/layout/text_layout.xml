@@ -33,7 +33,7 @@
         android:id="@+id/text_theme"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Your text theme"
+        android:hint="Your theme"
         android:maxLines="1"
         />
     <EditText
