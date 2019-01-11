@@ -2,6 +2,7 @@ package com.example.myfirsttext;
 
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -41,6 +42,10 @@ public class EditContent extends Activity implements OnClickListener{
 	private int readTextRequest;
 	
 	private Intent readIntent;
+	
+	private SQLiteDatabase db;
+	
+	private MyTextDBHelper helperDB;
 
 	
 	@Override
@@ -56,6 +61,8 @@ public class EditContent extends Activity implements OnClickListener{
 		voice = (Button) findViewById(R.id.voice);
 		theme = (EditText) findViewById(R.id.text_theme);
 		content = (EditText) findViewById(R.id.text_content);
+		helperDB = new MyTextDBHelper(this,"newThemeStore.db",null,19);
+		db = helperDB.getWritableDatabase();
 		back.setOnClickListener(this);
 		save.setOnClickListener(this);
 		photo.setOnClickListener(this);
@@ -68,9 +75,9 @@ public class EditContent extends Activity implements OnClickListener{
 		//Log.d("EditContent",readTextRequest);
 		if(readTextRequest != -1) {
 			theTheme = readIntent.getStringExtra("textTheme");
-			Log.d("EditContent",theTheme);
 			theContent = readIntent.getStringExtra("textContent");
 			theme.setText(theTheme);
+			content.setText(theContent);
 		}
 	}
 
