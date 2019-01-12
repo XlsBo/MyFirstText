@@ -61,7 +61,7 @@ public class EditContent extends Activity implements OnClickListener{
 		voice = (Button) findViewById(R.id.voice);
 		theme = (EditText) findViewById(R.id.text_theme);
 		content = (EditText) findViewById(R.id.text_content);
-		helperDB = new MyTextDBHelper(this,"newThemeStore.db",null,19);
+		helperDB = new MyTextDBHelper(this,"newThemeStore.db",null,30);
 		db = helperDB.getWritableDatabase();
 		back.setOnClickListener(this);
 		save.setOnClickListener(this);

@@ -52,7 +52,7 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		setContentView(R.layout.activity_main);
 		create = (Button) findViewById(R.id.create_item);
 		listView = (ListView) findViewById(R.id.list_view);
-		myTextDB = new MyTextDBHelper(this,"newThemeStore.db",null,19);
+		myTextDB = new MyTextDBHelper(this,"newThemeStore.db",null,30);
 		create.setOnClickListener(this);
 		textThemeList = new ArrayList<String>(); 
 		adapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,textThemeList);
@@ -62,6 +62,7 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		textDB = myTextDB.getWritableDatabase();
 		Cursor cursor = textDB.query("ThemeList", null, null, null, null, null, null);
 		if(cursor.moveToFirst()) {
+			textThemeList.clear();
 			do {
 				String oldTheme = cursor.getString(cursor.getColumnIndex("themeList"));
 				textThemeList.add(oldTheme);
@@ -117,18 +118,28 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		}
 	}
 	
+	@Override
 	public void onBackPressed() {
 		//Intent intent = getIntent();
 		Cursor cursor = textDB.query("MyThemeItem", null, null, null, null, null, null);
 		if(cursor.moveToFirst()) {
+			textDB.delete("ThemeList",null,null);
 			do {
 				String themeName = cursor.getString(cursor.getColumnIndex("themeList"));
 				ContentValues values = new ContentValues();
 				values.put("themeList",themeName);
 				textDB.insert("ThemeList",null,values);
-			}while(cursor.moveToNext());
+				}while(cursor.moveToNext());
 			cursor.close();
-		}
+			}
 		finish();
+		}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if(textDB != null) {
+			textDB.close();
+		}
 	}
-}
+	}
